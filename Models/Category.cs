@@ -1,11 +1,15 @@
-﻿namespace AuctionBackend.Model
+﻿namespace AuctionBackend.Models
 {
     public class Category
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public Category()
+        {
+            this.Auctions = new HashSet<Auction>();
+        }
+        public Guid Id { get; set; }
+       
+        public required string Name { get; set; }
 
-        public String Items { get; set; }
-
+        public ICollection<Auction> Auctions { get; set; }
     }
 }

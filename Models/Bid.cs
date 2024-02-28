@@ -1,16 +1,21 @@
-﻿namespace AuctionBackend.Model
+﻿using AuctionBackend.Models;
+
+namespace AuctionBackend.Models
 {
     public class Bid
     {
-
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+     
         public decimal Price { get; set; }
-        public string Item { get; set; }
-        public string User { get; set; }
-        public int DateCreated { get; set; }
+        
+        public int ItemId { get; set; }
+        
+        public int UserId { get; set; }
 
-        public bool WinningBid { get; set; }
-       
+        public required virtual User User { get; set; }
 
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+
+        public bool WinningBid { get; set; } = false;
     }
 }

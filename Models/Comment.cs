@@ -1,17 +1,16 @@
-﻿namespace AuctionBackend.Model
+﻿namespace AuctionBackend.Models
 {
     public class Comment
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int ItemId { get; set; }
+        public int AuctionId { get; set; }
 
         public int UserId { get; set; }
 
-        public string Description { get; set; }
+        //[MaxLength(ContentMaxLength)]
+        public required string Description { get; set; }
 
-        public DateTime DateCreated { get; set; }
-
-
+        public DateTime DateCreated { get; set; } = DateTime.Now;
     }
 }
