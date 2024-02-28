@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionBackend", "AuctionBackend.csproj", "{8BFFBCE8-52A2-4955-ABFF-E995183A1594}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8BFFBCE8-52A2-4955-ABFF-E995183A1594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BFFBCE8-52A2-4955-ABFF-E995183A1594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BFFBCE8-52A2-4955-ABFF-E995183A1594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BFFBCE8-52A2-4955-ABFF-E995183A1594}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C38F61F0-7C18-4871-B7EB-DE68D726A1A0}
+	EndGlobalSection
+EndGlobal

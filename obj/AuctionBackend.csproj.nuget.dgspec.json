@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\Auction Backend.csproj": {}
+    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\AuctionBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\Auction Backend.csproj": {
+    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\AuctionBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\Auction Backend.csproj",
-        "projectName": "Auction Backend",
-        "projectPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\Auction Backend.csproj",
+        "projectUniqueName": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\AuctionBackend.csproj",
+        "projectName": "AuctionBackend",
+        "projectPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\AuctionBackend.csproj",
         "packagesPath": "C:\\Users\\mrz70\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\obj\\",
+        "outputPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mrz70\\AppData\\Roaming\\NuGet\\NuGet.Config",
