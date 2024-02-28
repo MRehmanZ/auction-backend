@@ -2,7 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using Microsoft.Extensions.Options;
-using IdentityPractice.Services;
+using AuctionBackend.Services;
 
 namespace AuctionBackend.Services
 {

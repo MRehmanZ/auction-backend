@@ -5198,19 +5198,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\mrz70\\.nuget\\packages\\": {}
+    "C:\\Users\\hamza\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj",
+      "projectUniqueName": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj",
       "projectName": "AuctionBackend",
-      "projectPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj",
-      "packagesPath": "C:\\Users\\mrz70\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\obj\\",
+      "projectPath": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj",
+      "packagesPath": "C:\\Users\\hamza\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\mrz70\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hamza\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5286,16 +5286,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

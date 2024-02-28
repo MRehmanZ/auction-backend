@@ -1,5 +1,5 @@
-using IdentityPractice.Models;
-using IdentityPractice.Services;
+using AuctionBackend.Models;
+using AuctionBackend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ namespace AuctionBackend.Controllers
             _emailService = emailService;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register(AuthModel model)
+        public async Task<IActionResult> Register(User model)
         {
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -66,7 +66,7 @@ namespace AuctionBackend.Controllers
             return BadRequest("Email verification failed.");
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(AuthModel model)
+        public async Task<IActionResult> Login(User model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password,
            isPersistent: false, lockoutOnFailure: false);
