@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pbzql3fkJztAiI6NIJAg6iBhsdJ0t9Gl3A5BlsnCfx3flyOnNFe5h4s5MyWXu0BUtBoyYNuSAQtCch4BBAeFrA==",
+  "dgSpecHash": "ogrUZDOJANaM8UooWopVJRRwr9JStVfbVa7nU+FRFDD9ZblgBj/7lg5tCFfyTqKG3dmIo8htPNP6B6ucoNs4Qg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend\\AuctionBackend.csproj",
+  "projectFilePath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mrz70\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\mrz70\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
