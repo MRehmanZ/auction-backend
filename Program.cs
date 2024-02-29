@@ -2,6 +2,7 @@ using AuctionBackend.Models;
 using AuctionBackend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace AuctionBackend
@@ -14,10 +15,9 @@ namespace AuctionBackend
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
-
+            builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AuctionContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("Connection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
 
             builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AuctionContext>().AddDefaultTokenProviders();
