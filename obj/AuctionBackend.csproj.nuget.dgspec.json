@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj": {}
+    "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj": {
+    "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj",
+        "projectUniqueName": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj",
         "projectName": "AuctionBackend",
-        "projectPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\AuctionBackend.csproj",
-        "packagesPath": "C:\\Users\\mrz70\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mrz70\\Desktop\\uni\\Software Engineering MSc\\web application development\\Auction Backend\\obj\\",
+        "projectPath": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\AuctionBackend.csproj",
+        "packagesPath": "C:\\Users\\hamza\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hamza\\Desktop\\Projects\\auction-backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\mrz70\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hamza\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,42 +39,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "MailKit": {
-              "target": "Package",
-              "version": "[4.3.0, )"
-            },
-            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Microsoft.EntityFrameworkCore.Sqlite": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Microsoft.Extensions.DependencyInjection": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.4.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -86,15 +50,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,4 +1,6 @@
-﻿namespace AuctionBackend.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace AuctionBackend.Models
 {
     public class Auction
     {
@@ -29,7 +31,8 @@
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
         public DateTime ExpiryDate { get; set; }
-        
+
+        [Precision(18, 2)]
         public decimal Price { get; set; }
         
         public int NumberOfBids { get; set; } = 0;

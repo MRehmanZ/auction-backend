@@ -6,10 +6,12 @@ using System.Collections.Generic;
 
 namespace AuctionBackend.Models
 {
-    public class AuctionContext : IdentityDbContext<User>
+    public class AuctionContext : IdentityDbContext<IdentityUser>
     {
         public AuctionContext(DbContextOptions<AuctionContext> options) : base(options)
         { }
+
+        public DbSet<User> Users { get; set; }
 
         public DbSet<AuctionRecord> AuctionRecords { get; set; }
 
