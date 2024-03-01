@@ -1,12 +1,17 @@
 using AuctionBackend.Models;
 using AuctionBackend.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace AuctionBackend.Controllers
 {
@@ -17,12 +22,15 @@ namespace AuctionBackend.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly EmailService _emailService;
-        public AccountController(UserManager<IdentityUser> userManager,
-       SignInManager<IdentityUser> signInManager, EmailService emailService)
+        private readonly IConfiguration _configuration;
+
+        public AccountController(UserManager<IdentityUser> userManager, 
+            SignInManager<IdentityUser> signInManager, EmailService emailService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
+            _configuration = configuration;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register(User model)
@@ -33,13 +41,14 @@ namespace AuctionBackend.Controllers
             {
                 // Generate an email verification token
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
                 // Create the verification link
                 var verificationLink = Url.Action("VerifyEmail", "Account", new
                 {
                     userId = user.Id,
-                    token =
-               token
+                    token = token
                 }, Request.Scheme);
+
                 // Send the verification email
                 var emailSubject = "Email Verification";
                 var emailBody = $"Please verify your email by clicking the following link: {verificationLink}";

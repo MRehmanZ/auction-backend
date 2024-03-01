@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuctionBackend.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    [Migration("20240229180846_InitialCreate")]
+    [Migration("20240229194755_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
