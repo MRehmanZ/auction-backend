@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using AuctionBackend.Models;
 
 namespace AuctionBackend.Models
 {
@@ -20,14 +22,17 @@ namespace AuctionBackend.Models
 
         public Guid Id { get; set; }
 
-        public required string Name { get; set; }
+        [Required]
+        public string Name { get; set; }
         
         public ItemCondition Condition { get; set; }
-        
-        public required string Description { get; set; }
-        
-        public Guid Owner { get; set; }
-        
+
+        [Required]
+        public string Description { get; set; }
+
+        //public Guid UserId { get; set; }
+        public virtual User User { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
         public DateTime ExpiryDate { get; set; }
@@ -41,6 +46,7 @@ namespace AuctionBackend.Models
         
         public int? WinnerBid { get; set; } // BidId
 
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bid> Bids { get; set; }
     }
 }

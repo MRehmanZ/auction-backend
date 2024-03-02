@@ -9,7 +9,7 @@
             
         public Guid Id { get; set; }
 
-        public int UserId { get; set; } // TODO: check if UserId or BidId
+        public Guid UserId { get; set; } // TODO: check if UserId or BidId
 
         public int CurrentBid { get; set; }
 

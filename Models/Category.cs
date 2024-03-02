@@ -1,4 +1,6 @@
-﻿namespace AuctionBackend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuctionBackend.Models
 {
     public class Category
     {
@@ -7,8 +9,9 @@
             this.Auctions = new HashSet<Auction>();
         }
         public Guid Id { get; set; }
-       
-        public required string Name { get; set; }
+
+        [Required]
+        public string Name { get; set; }
 
         public ICollection<Auction> Auctions { get; set; }
     }

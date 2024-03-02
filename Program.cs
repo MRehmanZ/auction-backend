@@ -19,7 +19,7 @@ namespace AuctionBackend
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AuctionContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
+                options.UseSqlite(builder.Configuration.GetConnectionString("Connection")));
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AuctionContext>().AddDefaultTokenProviders();

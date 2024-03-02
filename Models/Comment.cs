@@ -1,4 +1,6 @@
-﻿namespace AuctionBackend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuctionBackend.Models
 {
     public class Comment
     {
@@ -6,10 +8,12 @@
 
         public int AuctionId { get; set; }
 
-        public int UserId { get; set; }
+        [Required]
+        public virtual User User { get; set; }
 
         //[MaxLength(ContentMaxLength)]
-        public required string Description { get; set; }
+        [Required]
+        public string Description { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
     }

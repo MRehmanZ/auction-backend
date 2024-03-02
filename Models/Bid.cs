@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using System.ComponentModel.DataAnnotations;
 using AuctionBackend.Models;
 
 namespace AuctionBackend.Models
@@ -12,10 +12,11 @@ namespace AuctionBackend.Models
         public decimal Price { get; set; }
         
         public int ItemId { get; set; }
-        
-        //public int UserId { get; set; }
 
-        public required virtual User User { get; set; }
+        //public Guid UserId { get; set; }
+
+        [Required]
+        public virtual User User { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
