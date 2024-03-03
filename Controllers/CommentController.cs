@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize] // Requires authentication for all actions in this controller
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CommentController : ControllerBase
@@ -26,7 +26,7 @@ namespace AuctionBackend.Controllers
         public IActionResult GetComments()
         {
             var comments = _context.Comments.ToList();
-            return Ok(comments);
+            return Ok(new ApiResponse<IEnumerable<Comment>>(comments));
         }
 
         // GET: api/comment/{id}
@@ -37,10 +37,10 @@ namespace AuctionBackend.Controllers
 
             if (comment == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("Comment not found"));
             }
 
-            return Ok(comment);
+            return Ok(new ApiResponse<Comment>(comment));
         }
 
         // POST: api/comment
@@ -49,13 +49,13 @@ namespace AuctionBackend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { id = comment.CommentId }, comment);
+            return CreatedAtAction("GetComment", new { id = comment.CommentId }, new ApiResponse<Comment>(comment));
         }
 
         // PUT: api/comment/{id}
@@ -64,12 +64,12 @@ namespace AuctionBackend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
 
             if (id != updatedComment.CommentId)
             {
-                return BadRequest("Invalid comment ID");
+                return BadRequest(new ApiResponse<object>("Invalid comment ID"));
             }
 
             _context.Entry(updatedComment).State = EntityState.Modified;
@@ -82,7 +82,7 @@ namespace AuctionBackend.Controllers
             {
                 if (!CommentExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ApiResponse<object>("Comment not found"));
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace AuctionBackend.Controllers
 
             if (comment == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("Comment not found"));
             }
 
             _context.Comments.Remove(comment);
