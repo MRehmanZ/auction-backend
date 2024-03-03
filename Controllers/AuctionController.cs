@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AuctionBackend.Models;
-using Microsoft.AspNet.Identity;
 
 namespace AuctionBackend.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize] // Requires authentication for all actions in this controller
     [ApiController]
+    [Route("api/[controller]")]
     public class AuctionController : ControllerBase
     {
         private readonly AuctionContext _context;
@@ -16,49 +21,36 @@ namespace AuctionBackend.Controllers
             _context = context;
         }
 
-        // GET: api/Auction
+        // GET: api/auction
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Auction>>> GetAuctions()
+        public IActionResult GetAuctions()
         {
-            return await _context.Auctions.ToListAsync();
+            var auctions = _context.Auctions.ToList();
+            return Ok(auctions);
         }
 
-        // GET: api/Auction/5
-        [HttpGet("{userId}/{auctionId}")]
-        public async Task<ActionResult<Auction>> GetAuction(int auctionId)
+        // GET: api/auction/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAuction(Guid id)
         {
-            
-                var auction = await _context.Auctions.FindAsync(auctionId);
+            var auction = await _context.Auctions.FindAsync(id);
 
-                if (auction != null)
-                {
-                    return auction;
-                }
-          
-            return NotFound();
+            if (auction == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(auction);
         }
 
-        // POST: api/Auction
+        // POST: api/auction
         [HttpPost]
-        public async Task<IActionResult> CreateAuction([FromBody] Auction auctionCreateModel)
+        public async Task<IActionResult> CreateAuction([FromBody] Auction auction)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            // Get the current user ID from the authenticated user
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var auction = new Auction
-            {
-                Title = auctionCreateModel.Title,
-                Description = auctionCreateModel.Description,
-                StartingPrice = auctionCreateModel.Price,
-                EndTime = auctionCreateModel.ExpiryDate,
-                UserId = userId, // Assign the auction to the current user
-                CategoryId = auctionCreateModel.CategoryId // Assuming CategoryId is provided in the request
-            };
 
             _context.Auctions.Add(auction);
             await _context.SaveChangesAsync();
@@ -66,11 +58,47 @@ namespace AuctionBackend.Controllers
             return CreatedAtAction("GetAuction", new { id = auction.AuctionId }, auction);
         }
 
-        // DELETE: api/Auction/5
-        [HttpDelete("{userId}/{user}")]
+        // PUT: api/auction/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] Auction updatedAuction)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != updatedAuction.AuctionId)
+            {
+                return BadRequest("Invalid auction ID");
+            }
+
+            _context.Entry(updatedAuction).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AuctionExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/auction/{id}
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuction(Guid id)
         {
             var auction = await _context.Auctions.FindAsync(id);
+
             if (auction == null)
             {
                 return NotFound();
@@ -80,6 +108,11 @@ namespace AuctionBackend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private bool AuctionExists(Guid id)
+        {
+            return _context.Auctions.Any(a => a.AuctionId == id);
         }
     }
 }

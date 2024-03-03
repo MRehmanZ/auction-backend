@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using AuctionBackend.Models;
+using System.Collections.Generic;
 
 namespace AuctionBackend.Models
 {
@@ -20,7 +21,8 @@ namespace AuctionBackend.Models
             POOR
         }
 
-        public Guid Id { get; set; }
+        [Key]
+        public Guid AuctionId { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -30,8 +32,12 @@ namespace AuctionBackend.Models
         [Required]
         public string Description { get; set; }
 
-        //public Guid UserId { get; set; }
-        public virtual User User { get; set; }
+        public Guid UserId { get; set; }
+        public ApplicationUser User { get; set; }
+
+        // Foreign key relationship with Category
+        public Guid CategoryId { get; set; }
+        public Category Category { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
@@ -46,7 +52,13 @@ namespace AuctionBackend.Models
         
         public int? WinnerBid { get; set; } // BidId
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Bid> Bids { get; set; }
+        // Collection navigation property for Auctions created by the user
+        public ICollection<AuctionRecord> AuctionRecords { get; set; }
+
+        // Collection navigation property for Bids placed by the user
+        public ICollection<Bid> Bids { get; set; }
+
+        // Collection navigation property for Comments posted by the user
+        public ICollection<Comment> Comments { get; set; }
     }
 }

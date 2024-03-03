@@ -1,7 +1,7 @@
 ﻿using AuctionBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AuctionBackend.Models;
+using System.Security.Claims;
 
 namespace AuctionBackend.Controllers
 {
@@ -18,14 +18,14 @@ namespace AuctionBackend.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<ApplicationUser>> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -39,7 +39,7 @@ namespace AuctionBackend.Controllers
 
         // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<ApplicationUser>> PostUser(ApplicationUser user)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(Guid id, ApplicationUser user)
         {
             if (id != user.Id)
             {
