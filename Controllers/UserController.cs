@@ -1,62 +1,80 @@
-﻿using AuctionBackend.Models;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuctionContext _context;
 
-        public UserController(AuctionContext context)
+        public UserController(UserManager<ApplicationUser> userManager, AuctionContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
-        // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
+        public IActionResult GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = _userManager.Users.ToList();
+            return Ok(new ApiResponse<IEnumerable<ApplicationUser>>(users));
         }
 
-        // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApplicationUser>> GetUser(Guid id)
+        public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<ApplicationUser>("User not found"));
             }
 
-            return user;
+            return Ok(new ApiResponse<ApplicationUser>(user));
         }
 
-        // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<ApplicationUser>> PostUser(ApplicationUser user)
+        public async Task<IActionResult> CreateUser([FromBody] ApplicationUser user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-        }
-
-        // PUT: api/User/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, ApplicationUser user)
-        {
-            if (id != user.Id)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            var result = await _userManager.CreateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return CreatedAtAction("GetUser", new { id = user.Id }, new ApiResponse<ApplicationUser>(user));
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] ApplicationUser updatedUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid model state");
+            }
+
+            if (id != updatedUser.Id)
+            {
+                return BadRequest(new ApiResponse<object>("Invalid user ID"));
+            }
+
+            _context.Entry(updatedUser).State = EntityState.Modified;
 
             try
             {
@@ -66,7 +84,7 @@ namespace AuctionBackend.Controllers
             {
                 if (!UserExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ApiResponse<object>("User not found"));
                 }
                 else
                 {
@@ -77,25 +95,52 @@ namespace AuctionBackend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("User not found"));
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.DeleteAsync(user);
 
-            return NoContent();
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.Errors);
         }
 
         private bool UserExists(Guid id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _userManager.Users.Any(u => u.Id == id);
+        }
+    }
+
+    public class ApiResponse<T>
+    {
+        public T Data { get; set; }
+        public string Message { get; set; }
+        public IEnumerable<string> Errors { get; set; }
+
+        public ApiResponse(T data)
+        {
+            Data = data;
+        }
+
+        public ApiResponse(string message)
+        {
+            Message = message;
+        }
+
+        public ApiResponse(string message, IEnumerable<string> errors)
+        {
+            Message = message;
+            Errors = errors;
         }
     }
 }
