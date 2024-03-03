@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize] // Requires authentication for all actions in this controller
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AuctionController : ControllerBase
@@ -26,7 +26,7 @@ namespace AuctionBackend.Controllers
         public IActionResult GetAuctions()
         {
             var auctions = _context.Auctions.ToList();
-            return Ok(auctions);
+            return Ok(new ApiResponse<IEnumerable<Auction>>(auctions));
         }
 
         // GET: api/auction/{id}
@@ -37,10 +37,10 @@ namespace AuctionBackend.Controllers
 
             if (auction == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("Auction not found"));
             }
 
-            return Ok(auction);
+            return Ok(new ApiResponse<Auction>(auction));
         }
 
         // POST: api/auction
@@ -49,13 +49,17 @@ namespace AuctionBackend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
+
+            // Initialize properties
+            auction.CurrentHighestBid = 0;
+            auction.WinnerBidId = null;
 
             _context.Auctions.Add(auction);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAuction", new { id = auction.AuctionId }, auction);
+            return CreatedAtAction("GetAuction", new { id = auction.AuctionId }, new ApiResponse<Auction>(auction));
         }
 
         // PUT: api/auction/{id}
@@ -64,12 +68,12 @@ namespace AuctionBackend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Invalid model state");
             }
 
             if (id != updatedAuction.AuctionId)
             {
-                return BadRequest("Invalid auction ID");
+                return BadRequest(new ApiResponse<object>("Invalid auction ID"));
             }
 
             _context.Entry(updatedAuction).State = EntityState.Modified;
@@ -82,7 +86,7 @@ namespace AuctionBackend.Controllers
             {
                 if (!AuctionExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ApiResponse<object>("Auction not found"));
                 }
                 else
                 {
@@ -101,13 +105,45 @@ namespace AuctionBackend.Controllers
 
             if (auction == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("Auction not found"));
             }
 
             _context.Auctions.Remove(auction);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST: api/auction/{id}/place-bid
+        [HttpPost("{id}/place-bid")]
+        public async Task<IActionResult> PlaceBid(Guid id, [FromBody] Bid bid)
+        {
+            var auction = await _context.Auctions.FindAsync(id);
+
+            if (auction == null)
+            {
+                return NotFound(new ApiResponse<object>("Auction not found"));
+            }
+
+            // Check if the bid Price is higher than the current highest bid
+            if (bid.Price <= auction.CurrentHighestBid)
+            {
+                return BadRequest(new ApiResponse<object>("Bid Price must be higher than the current highest bid"));
+            }
+
+            // Update the current highest bid
+            auction.CurrentHighestBid = bid.Price;
+
+            // Assign the bid as the winner bid
+            auction.WinnerBidId = bid.BidId;
+
+            // Update the auction
+            _context.Entry(auction).State = EntityState.Modified;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<object>("Bid placed successfully"));
         }
 
         private bool AuctionExists(Guid id)
