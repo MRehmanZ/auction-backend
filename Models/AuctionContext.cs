@@ -50,18 +50,17 @@ namespace AuctionBackend.Models
                 .WithOne(ar => ar.Bid)
                 .HasForeignKey(ar => ar.BidId);
 
-            // Configuring a one-to-many relationship between Bid and AuctionRecord
+            // Configuring a one-to-many relationship between Category and Auction
             modelBuilder.Entity<Category>()
                 .HasMany(a => a.Auctions)
                 .WithOne(c => c.Category)
                 .HasForeignKey(c => c.CategoryId);
 
-            // Configuring a one-to-many relationship between Bid and AuctionRecord
-           modelBuilder.Entity<Auction>()
+            // Configuring a one-to-many relationship between User and Comment
+           modelBuilder.Entity<ApplicationUser>()
                 .HasMany(a => a.Comments)
-                .WithOne(b => b.Auction)
-                .HasForeignKey(c => c.AuctionId);
-
+                .WithOne(b => b.User)
+                .HasForeignKey(c => c.UserId);
         }
 
     }
