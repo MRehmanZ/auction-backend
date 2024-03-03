@@ -19,23 +19,29 @@ namespace AuctionBackend.Models
             Bids = new List<Bid>();
         }
 
-    [Required]
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
+        
+        [JsonIgnore]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         // Navigation property for Auctions created by the user
+        [JsonIgnore]
         public virtual ICollection<Auction> Auctions { get; set; }
 
         // Navigation property for Bids placed by the user
+        [JsonIgnore]
         public virtual ICollection<Bid> Bids { get; set; }
 
         // Navigation property for Comments posted by the user
+        [JsonIgnore]
         public virtual ICollection<Comment> Comments { get; set; }
 
         // Navigation property for AuctionRecords associated with the user
+        [JsonIgnore]
         public virtual ICollection<AuctionRecord> AuctionRecords { get; set; }
 
         [JsonIgnore]

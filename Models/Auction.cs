@@ -49,16 +49,14 @@ namespace AuctionBackend.Models
         public int NumberOfBids { get; set; } = 0;
         
         public bool IsActive { get; set; } = false;
-        
-        public int? WinnerBid { get; set; } // BidId
 
-        // Collection navigation property for Auctions created by the user
-        public ICollection<AuctionRecord> AuctionRecords { get; set; }
+        public Guid? WinnerBidId { get; set; }
+
+        public decimal CurrentHighestBid { get; set; }
+
 
         // Collection navigation property for Bids placed by the user
         public ICollection<Bid> Bids { get; set; }
 
-        // Collection navigation property for Comments posted by the user
-        public ICollection<Comment> Comments { get; set; }
     }
 }
