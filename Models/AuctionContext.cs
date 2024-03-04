@@ -44,12 +44,6 @@ namespace AuctionBackend.Models
                 .WithOne(b => b.Auction)
                 .HasForeignKey(b => b.AuctionId);
 
-            // Configuring a one-to-many relationship between Bid and AuctionRecord
-            modelBuilder.Entity<Bid>()
-                .HasMany(b => b.BidRecords)
-                .WithOne(ar => ar.Bid)
-                .HasForeignKey(ar => ar.BidId);
-
             // Configuring a one-to-many relationship between Category and Auction
             modelBuilder.Entity<Category>()
                 .HasMany(a => a.Auctions)
@@ -57,10 +51,29 @@ namespace AuctionBackend.Models
                 .HasForeignKey(c => c.CategoryId);
 
             // Configuring a one-to-many relationship between User and Comment
-           modelBuilder.Entity<ApplicationUser>()
-                .HasMany(a => a.Comments)
-                .WithOne(b => b.User)
-                .HasForeignKey(c => c.UserId);
+           modelBuilder.Entity<Comment>()
+                .HasOne(a => a.Auction)
+                .WithMany(b => b.Comments)
+                .HasForeignKey(c => c.AuctionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AuctionRecord>()
+                .HasOne(ar => ar.Auction)
+                .WithMany(a => a.AuctionRecords)
+                .HasForeignKey(ar => ar.AuctionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bid>()
+                .HasOne(b => b.Auction)
+                .WithMany(a => a.Bids)
+                .HasForeignKey(b => b.AuctionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AuctionRecord>()
+                .HasOne(ar => ar.Bid)
+                .WithMany(b => b.AuctionRecords)
+                .HasForeignKey(ar => ar.BidId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

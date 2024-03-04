@@ -9,7 +9,6 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase

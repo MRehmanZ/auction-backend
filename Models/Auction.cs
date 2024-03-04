@@ -58,5 +58,9 @@ namespace AuctionBackend.Models
         // Collection navigation property for Bids placed by the user
         public ICollection<Bid> Bids { get; set; }
 
+        public ICollection<Comment> Comments { get; set; }
+
+         public ICollection<AuctionRecord> AuctionRecords { get; set; }
+
     }
 }

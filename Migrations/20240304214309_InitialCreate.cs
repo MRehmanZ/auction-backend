@@ -230,7 +230,7 @@ namespace AuctionBackend.Migrations
                         column: x => x.AuctionId,
                         principalTable: "Auctions",
                         principalColumn: "AuctionId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -260,7 +260,7 @@ namespace AuctionBackend.Migrations
                         column: x => x.AuctionId,
                         principalTable: "Auctions",
                         principalColumn: "AuctionId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -294,7 +294,7 @@ namespace AuctionBackend.Migrations
                         column: x => x.AuctionId,
                         principalTable: "Auctions",
                         principalColumn: "AuctionId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -392,7 +392,7 @@ namespace AuctionBackend.Migrations
                 column: "BidId",
                 principalTable: "Bids",
                 principalColumn: "BidId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />

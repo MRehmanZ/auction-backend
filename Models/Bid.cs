@@ -23,6 +23,6 @@ namespace AuctionBackend.Models
         public bool WinningBid { get; set; } = false;
 
         // Collection navigation property for BidRecords
-        public virtual ICollection<AuctionRecord> BidRecords { get; set; }
+        public virtual ICollection<AuctionRecord> AuctionRecords { get; set; }
     }
 }

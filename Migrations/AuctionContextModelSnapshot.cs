@@ -17,7 +17,7 @@ namespace AuctionBackend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -425,15 +425,15 @@ namespace AuctionBackend.Migrations
             modelBuilder.Entity("AuctionBackend.Models.AuctionRecord", b =>
                 {
                     b.HasOne("AuctionBackend.Models.Auction", "Auction")
-                        .WithMany()
+                        .WithMany("AuctionRecords")
                         .HasForeignKey("AuctionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AuctionBackend.Models.Bid", "Bid")
-                        .WithMany("BidRecords")
+                        .WithMany("AuctionRecords")
                         .HasForeignKey("BidId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AuctionBackend.Models.ApplicationUser", "User")
@@ -454,7 +454,7 @@ namespace AuctionBackend.Migrations
                     b.HasOne("AuctionBackend.Models.Auction", "Auction")
                         .WithMany("Bids")
                         .HasForeignKey("AuctionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AuctionBackend.Models.AuctionRecord", null)
@@ -475,9 +475,9 @@ namespace AuctionBackend.Migrations
             modelBuilder.Entity("AuctionBackend.Models.Comment", b =>
                 {
                     b.HasOne("AuctionBackend.Models.Auction", "Auction")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("AuctionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AuctionBackend.Models.ApplicationUser", "User")
@@ -555,7 +555,11 @@ namespace AuctionBackend.Migrations
 
             modelBuilder.Entity("AuctionBackend.Models.Auction", b =>
                 {
+                    b.Navigation("AuctionRecords");
+
                     b.Navigation("Bids");
+
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("AuctionBackend.Models.AuctionRecord", b =>
@@ -565,7 +569,7 @@ namespace AuctionBackend.Migrations
 
             modelBuilder.Entity("AuctionBackend.Models.Bid", b =>
                 {
-                    b.Navigation("BidRecords");
+                    b.Navigation("AuctionRecords");
                 });
 
             modelBuilder.Entity("AuctionBackend.Models.Category", b =>

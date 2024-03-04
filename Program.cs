@@ -1,12 +1,11 @@
 using AuctionBackend.Models;
 using AuctionBackend.Services;
+using AuctionBackend.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
-
 namespace AuctionBackend
 
 {
@@ -29,6 +28,7 @@ namespace AuctionBackend
 
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddScoped<EmailService>();
+            //builder.Services.AddScoped<RolesController>();
 
             builder.Services.AddAuthentication(options =>
             {
