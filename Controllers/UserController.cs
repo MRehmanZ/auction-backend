@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -55,6 +55,8 @@ namespace AuctionBackend.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            user.UserName = user.Email;
 
             var result = await _userManager.CreateAsync(user);
 
