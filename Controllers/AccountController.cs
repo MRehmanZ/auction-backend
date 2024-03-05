@@ -95,9 +95,12 @@ namespace AuctionBackend.Controllers
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                var roles = await _userManager.GetRolesAsync(user);
-                var token = GenerateJwtToken(user, roles);
-                return Ok(new { Token = token});
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var token = GenerateJwtToken(user, roles);
+                    return Ok(new { Token = token });
+                }
             }
             return Unauthorized("Invalid login attempt.");
         }
