@@ -17,6 +17,7 @@ namespace AuctionBackend.Models
             Comments = new List<Comment>();
             AuctionRecords = new List<AuctionRecord>();
             Bids = new List<Bid>();
+            Id = Guid.NewGuid();
         }
 
         [Required]

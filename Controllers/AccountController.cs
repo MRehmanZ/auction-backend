@@ -67,15 +67,15 @@ namespace AuctionBackend.Controllers
                 var emailBody = $"Please verify your email by clicking the following link: {verificationLink}";
                 _emailService.SendEmail(user.Email, emailSubject, emailBody);
 
-                return Ok("ApplicationUser registered successfully. An email verification link has been sent.");
+                return Ok("User registered successfully. An email verification link has been sent.");
             }
             return BadRequest(result.Errors);
         }
         // Add an action to handle email verification
         [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail(string userId, string token)
+        public async Task<IActionResult> VerifyEmail(Guid userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return NotFound("ApplicationUser not found.");
@@ -94,9 +94,48 @@ namespace AuctionBackend.Controllers
            isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return Ok("Login successful.");
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                var roles = await _userManager.GetRolesAsync(user);
+                var token = GenerateJwtToken(user, roles);
+                return Ok(new { Token = token});
             }
             return Unauthorized("Invalid login attempt.");
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok("Logged out");
+        }
+
+        private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            // Add roles as claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddHours(Convert.ToDouble(_configuration["Jwt:ExpireHours"]));
+
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Issuer"],
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
     }
 }

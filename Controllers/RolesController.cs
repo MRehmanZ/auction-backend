@@ -15,10 +15,10 @@ namespace AuctionBackend.Controllers
     [Authorize(Roles = "Admin")]
     public class RolesController : ControllerBase
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public RolesController(RoleManager<IdentityRole<Guid>> roleManager, UserManager<ApplicationUser> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -32,9 +32,9 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpGet("{roleId}")]
-        public async Task<IActionResult> GetRole(string roleId)
+        public async Task<IActionResult> GetRole(Guid roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
 
             if (role == null)
             {
@@ -47,7 +47,7 @@ namespace AuctionBackend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] string roleName)
         {
-            var role = new IdentityRole(roleName);
+            var role = new IdentityRole<Guid>(roleName);
             var result = await _roleManager.CreateAsync(role);
 
             if (result.Succeeded)
@@ -80,9 +80,9 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteRole(string roleId)
+        public async Task<IActionResult> DeleteRole(Guid roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
 
             if (role == null)
             {
@@ -102,7 +102,7 @@ namespace AuctionBackend.Controllers
         [HttpPost("assign-role-to-user")]
         public async Task<IActionResult> AssignRoleToUser([FromBody] AssignRoleModel model)
         {
-            var user = await _userManager.FindByIdAsync(model.UserId);
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
 
             if (user == null)
             {
