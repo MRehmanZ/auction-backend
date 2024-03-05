@@ -35,13 +35,14 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(Guid id)
+        public async Task<IActionResult> GetUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            _logger.LogInformation("Getting user with User ID: {UserId}", id.ToString());
+            var user = await _userManager.FindByIdAsync(id);
+            _logger.LogInformation("Getting user with User ID: {UserId}", id);
+
             if (user == null)
             {
-                _logger.LogInformation("User: {UserId} not found", id.ToString());
+                _logger.LogInformation("User: {UserId} not found", id);
                 return NotFound(new ApiResponse<ApplicationUser>("User not found"));
             }
 
@@ -71,7 +72,7 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] ApplicationUser updatedUser)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser updatedUser)
         {
             if (!ModelState.IsValid)
             {
@@ -79,39 +80,54 @@ namespace AuctionBackend.Controllers
                 return BadRequest("Invalid model state");
             }
 
-            if (id != updatedUser.Id)
+            if (!id.Equals(updatedUser.Id.ToString()))
             {
-                _logger.LogError("Error updating user: {UserId}", id.ToString());
+                _logger.LogError("Error updating user: {UserId}", id);
 
                 return BadRequest(new ApiResponse<object>("Invalid user ID"));
             }
 
-            _context.Entry(updatedUser).State = EntityState.Modified;
+            var currentUser = await _userManager.FindByIdAsync(id);
 
-            try
+            if (currentUser != null) 
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+                currentUser.Email = updatedUser.Email;
+                currentUser.Password = updatedUser.Password;
+                currentUser.Balance = updatedUser.Balance;
+
+                var result = await _userManager.UpdateAsync(currentUser);
+
+                try
+                {
+                    if (result.Succeeded)
+                    {
+                        Ok(updatedUser);
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(id))
+                    {
+                        _logger.LogWarning("User not found");
+                        return NotFound(new ApiResponse<object>("User not found"));
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            } else
             {
-                if (!UserExists(id))
-                {
-                    _logger.LogWarning("User not found");
-                    return NotFound(new ApiResponse<object>("User not found"));
-                }
-                else
-                {
-                    throw;
-                }
+                NotFound("User not found");
             }
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
@@ -132,13 +148,13 @@ namespace AuctionBackend.Controllers
             return BadRequest(result.Errors);
         }
 
-        private bool UserExists(Guid id)
+        private bool UserExists(string id)
         {
-            bool IsFound = _userManager.Users.Any(u => u.Id == id);
+            bool IsFound = _userManager.Users.Any(u => u.Id.ToString() == id);
             
             if (IsFound)
             {
-                _logger.LogInformation("User found with ID: {UserID}", id.ToString());
+                _logger.LogInformation("User found with ID: {UserID}", id);
 
             } 
             return IsFound;
