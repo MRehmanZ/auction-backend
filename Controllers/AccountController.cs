@@ -34,22 +34,22 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] ApplicationUser model)
+        public async Task<IActionResult> Register([FromBody] AuthModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(model);
             }
 
-            model.Auctions = new List<Auction>();
-            model.Comments = new List<Comment>();
-            model.AuctionRecords = new List<AuctionRecord>();
-            model.Bids = new List<Bid>();
-
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-            user.Password = model.Password;
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            user.Password = model.Password;
+            user.Auctions = new List<Auction>();
+            user.Comments = new List<Comment>();
+            user.AuctionRecords = new List<AuctionRecord>();
+            user.Bids = new List<Bid>();
+
+            var result = await _userManager.CreateAsync(user, user.Password);
             if (result.Succeeded)
             {
                 // Generate an email verification token
@@ -78,7 +78,7 @@ namespace AuctionBackend.Controllers
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                return NotFound("ApplicationUser not found.");
+                return NotFound("User not found.");
             }
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
@@ -87,6 +87,7 @@ namespace AuctionBackend.Controllers
             }
             return BadRequest("Email verification failed.");
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(ApplicationUser model)
         {
