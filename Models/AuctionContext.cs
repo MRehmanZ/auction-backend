@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace AuctionBackend.Models
@@ -50,7 +50,6 @@ namespace AuctionBackend.Models
                 .WithOne(c => c.Category)
                 .HasForeignKey(c => c.CategoryId);
 
-            // Configuring a one-to-many relationship between User and Comment
            modelBuilder.Entity<Comment>()
                 .HasOne(a => a.Auction)
                 .WithMany(b => b.Comments)
