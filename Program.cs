@@ -1,12 +1,15 @@
 using AuctionBackend.Models;
 using AuctionBackend.Services;
 using AuctionBackend.Controllers;
+using AuctionBackend.Seeds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AuctionBackend
 
@@ -16,6 +19,7 @@ namespace AuctionBackend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -57,6 +61,8 @@ namespace AuctionBackend
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -73,6 +79,22 @@ namespace AuctionBackend
             app.UseAuthorization();
 
             app.MapControllers();
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    Seeder.InitializeAsync(services).Wait();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred seeding the DB.");
+                }
+            }
 
             app.Run();
         }
