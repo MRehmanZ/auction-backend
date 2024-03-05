@@ -9,23 +9,28 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
+    [ApiController]
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuctionContext _context;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(UserManager<ApplicationUser> userManager, AuctionContext context)
+        public UserController(UserManager<ApplicationUser> userManager, AuctionContext context, ILogger<UserController> logger)
         {
             _userManager = userManager;
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult GetUsers()
+        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
         {
-            var users = _userManager.Users.ToList();
+            var users = _context.Users.ToList();
+            _logger.LogInformation("Getting list of all users");
+
             return Ok(new ApiResponse<IEnumerable<ApplicationUser>>(users));
         }
 
@@ -33,9 +38,10 @@ namespace AuctionBackend.Controllers
         public async Task<IActionResult> GetUser(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-
+            _logger.LogInformation("Getting user with User ID: {UserId}", id.ToString());
             if (user == null)
             {
+                _logger.LogInformation("User: {UserId} not found", id.ToString());
                 return NotFound(new ApiResponse<ApplicationUser>("User not found"));
             }
 
@@ -54,9 +60,11 @@ namespace AuctionBackend.Controllers
 
             if (result.Succeeded)
             {
+                _logger.LogInformation("User created with ID: {UserID}", user.Id);
                 return CreatedAtAction("GetUser", new { id = user.Id }, new ApiResponse<ApplicationUser>(user));
             }
 
+            _logger.LogError("Error creating user");
             return BadRequest(result.Errors);
         }
 
@@ -65,11 +73,14 @@ namespace AuctionBackend.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogError("Error invalid model state");
                 return BadRequest("Invalid model state");
             }
 
             if (id != updatedUser.Id)
             {
+                _logger.LogError("Error updating user: {UserId}", id.ToString());
+
                 return BadRequest(new ApiResponse<object>("Invalid user ID"));
             }
 
@@ -83,6 +94,7 @@ namespace AuctionBackend.Controllers
             {
                 if (!UserExists(id))
                 {
+                    _logger.LogWarning("User not found");
                     return NotFound(new ApiResponse<object>("User not found"));
                 }
                 else
@@ -101,6 +113,8 @@ namespace AuctionBackend.Controllers
 
             if (user == null)
             {
+                _logger.LogWarning("User not found");
+
                 return NotFound(new ApiResponse<object>("User not found"));
             }
 
@@ -108,6 +122,8 @@ namespace AuctionBackend.Controllers
 
             if (result.Succeeded)
             {
+                _logger.LogInformation("User deleted with ID: {UserID}", user.Id.ToString());
+
                 return NoContent();
             }
 
@@ -116,7 +132,14 @@ namespace AuctionBackend.Controllers
 
         private bool UserExists(Guid id)
         {
-            return _userManager.Users.Any(u => u.Id == id);
+            bool IsFound = _userManager.Users.Any(u => u.Id == id);
+            
+            if (IsFound)
+            {
+                _logger.LogInformation("User found with ID: {UserID}", id.ToString());
+
+            } 
+            return IsFound;
         }
     }
 
