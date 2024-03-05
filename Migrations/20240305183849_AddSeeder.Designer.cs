@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuctionBackend.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    [Migration("20240305001000_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240305183849_AddSeeder")]
+    partial class AddSeeder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
