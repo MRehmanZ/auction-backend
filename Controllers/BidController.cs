@@ -31,7 +31,7 @@ namespace AuctionBackend.Controllers
 
         // GET: api/bid/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBid(Guid id)
+        public async Task<IActionResult> GetBid(string id)
         {
             var bid = await _context.Bids.FindAsync(id);
 
@@ -80,14 +80,14 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/bid/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBid(Guid id, [FromBody] Bid updatedBid)
+        public async Task<IActionResult> UpdateBid(string id, [FromBody] Bid updatedBid)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid model state");
             }
 
-            if (id != updatedBid.BidId)
+            if (id != updatedBid.BidId.ToString())
             {
                 return BadRequest(new ApiResponse<object>("Invalid bid ID"));
             }
@@ -115,7 +115,7 @@ namespace AuctionBackend.Controllers
 
         // DELETE: api/bid/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBid(Guid id)
+        public async Task<IActionResult> DeleteBid(string id)
         {
             var bid = await _context.Bids.FindAsync(id);
 
@@ -128,15 +128,15 @@ namespace AuctionBackend.Controllers
             await _context.SaveChangesAsync();
 
             // Update the auction's current highest bid after deleting a bid
-            UpdateCurrentHighestBid(bid.AuctionId);
+            UpdateCurrentHighestBid(bid.AuctionId.ToString());
 
             return NoContent();
         }
 
-        private void UpdateCurrentHighestBid(Guid auctionId)
+        private void UpdateCurrentHighestBid(string auctionId)
         {
             var currentHighestBid = _context.Bids
-                .Where(b => b.AuctionId == auctionId)
+                .Where(b => b.AuctionId.ToString() == auctionId)
                 .OrderByDescending(b => b.Price)
                 .FirstOrDefault();
 
@@ -146,9 +146,9 @@ namespace AuctionBackend.Controllers
             _context.SaveChanges();
         }
 
-        private bool BidExists(Guid id)
+        private bool BidExists(string id)
         {
-            return _context.Bids.Any(b => b.BidId == id);
+            return _context.Bids.Any(b => b.BidId.ToString() == id);
         }
     }
 }

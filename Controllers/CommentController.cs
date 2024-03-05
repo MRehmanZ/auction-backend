@@ -31,7 +31,7 @@ namespace AuctionBackend.Controllers
 
         // GET: api/comment/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetComment(Guid id)
+        public async Task<IActionResult> GetComment(string id)
         {
             var comment = await _context.Comments.FindAsync(id);
 
@@ -60,14 +60,14 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/comment/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateComment(Guid id, [FromBody] Comment updatedComment)
+        public async Task<IActionResult> UpdateComment(string id, [FromBody] Comment updatedComment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
 
-            if (id != updatedComment.CommentId)
+            if (id != updatedComment.CommentId.ToString())
             {
                 return BadRequest(new ApiResponse<object>("Invalid comment ID"));
             }
@@ -95,7 +95,7 @@ namespace AuctionBackend.Controllers
 
         // DELETE: api/comment/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComment(Guid id)
+        public async Task<IActionResult> DeleteComment(string id)
         {
             var comment = await _context.Comments.FindAsync(id);
 
@@ -110,9 +110,9 @@ namespace AuctionBackend.Controllers
             return NoContent();
         }
 
-        private bool CommentExists(Guid id)
+        private bool CommentExists(string id)
         {
-            return _context.Comments.Any(c => c.CommentId == id);
+            return _context.Comments.Any(c => c.CommentId.ToString() == id);
         }
     }
 }

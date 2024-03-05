@@ -32,9 +32,9 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpGet("{roleId}")]
-        public async Task<IActionResult> GetRole(Guid roleId)
+        public async Task<IActionResult> GetRole(string roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            var role = await _roleManager.FindByIdAsync(roleId);
 
             if (role == null)
             {
@@ -80,9 +80,9 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteRole(Guid roleId)
+        public async Task<IActionResult> DeleteRole(string roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            var role = await _roleManager.FindByIdAsync(roleId);
 
             if (role == null)
             {

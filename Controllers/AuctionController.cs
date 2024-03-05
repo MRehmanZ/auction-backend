@@ -31,7 +31,7 @@ namespace AuctionBackend.Controllers
 
         // GET: api/auction/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuction(Guid id)
+        public async Task<IActionResult> GetAuction(string id)
         {
             var auction = await _context.Auctions.FindAsync(id);
 
@@ -64,14 +64,14 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/auction/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] Auction updatedAuction)
+        public async Task<IActionResult> UpdateAuction(string id, [FromBody] Auction updatedAuction)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid model state");
             }
 
-            if (id != updatedAuction.AuctionId)
+            if (id != updatedAuction.AuctionId.ToString())
             {
                 return BadRequest(new ApiResponse<object>("Invalid auction ID"));
             }
@@ -99,7 +99,7 @@ namespace AuctionBackend.Controllers
 
         // DELETE: api/auction/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuction(Guid id)
+        public async Task<IActionResult> DeleteAuction(string id)
         {
             var auction = await _context.Auctions.FindAsync(id);
 
@@ -116,7 +116,7 @@ namespace AuctionBackend.Controllers
 
         // POST: api/auction/{id}/place-bid
         [HttpPost("{id}/place-bid")]
-        public async Task<IActionResult> PlaceBid(Guid id, [FromBody] Bid bid)
+        public async Task<IActionResult> PlaceBid(string id, [FromBody] Bid bid)
         {
             var auction = await _context.Auctions.FindAsync(id);
 
@@ -146,9 +146,9 @@ namespace AuctionBackend.Controllers
             return Ok(new ApiResponse<object>("Bid placed successfully"));
         }
 
-        private bool AuctionExists(Guid id)
+        private bool AuctionExists(string id)
         {
-            return _context.Auctions.Any(a => a.AuctionId == id);
+            return _context.Auctions.Any(a => a.AuctionId.ToString() == id);
         }
     }
 }

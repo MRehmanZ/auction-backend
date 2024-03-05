@@ -32,7 +32,7 @@ namespace AuctionBackend.Controllers
 
         // GET: api/auctionrecord/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuctionRecord(Guid id)
+        public async Task<IActionResult> GetAuctionRecord(string id)
         {
             var auctionRecord = await _context.AuctionRecords.FindAsync(id);
 
@@ -61,14 +61,14 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/auctionrecord/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuctionRecord(Guid id, [FromBody] AuctionRecord updatedAuctionRecord)
+        public async Task<IActionResult> UpdateAuctionRecord(string id, [FromBody] AuctionRecord updatedAuctionRecord)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
 
-            if (id != updatedAuctionRecord.AuctionRecordId)
+            if (id != updatedAuctionRecord.AuctionRecordId.ToString())
             {
                 return BadRequest(new ApiResponse<object>("Invalid auction record ID"));
             }
@@ -96,7 +96,7 @@ namespace AuctionBackend.Controllers
 
         // DELETE: api/auctionrecord/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuctionRecord(Guid id)
+        public async Task<IActionResult> DeleteAuctionRecord(string id)
         {
             var auctionRecord = await _context.AuctionRecords.FindAsync(id);
 
@@ -111,9 +111,9 @@ namespace AuctionBackend.Controllers
             return NoContent();
         }
 
-        private bool AuctionRecordExists(Guid id)
+        private bool AuctionRecordExists(string id)
         {
-            return _context.AuctionRecords.Any(ar => ar.AuctionRecordId == id);
+            return _context.AuctionRecords.Any(ar => ar.AuctionRecordId.ToString() == id);
         }
     }
 }

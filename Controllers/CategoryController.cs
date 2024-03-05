@@ -31,7 +31,7 @@ namespace AuctionBackend.Controllers
 
         // GET: api/category/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory(Guid id)
+        public async Task<IActionResult> GetCategory(string id)
         {
             var category = await _context.Categories.FindAsync(id);
 
@@ -60,14 +60,14 @@ namespace AuctionBackend.Controllers
 
         // PUT: api/category/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] Category updatedCategory)
+        public async Task<IActionResult> UpdateCategory(string id, [FromBody] Category updatedCategory)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid model state");
             }
 
-            if (id != updatedCategory.CategoryId)
+            if (id != updatedCategory.CategoryId.ToString())
             {
                 return BadRequest(new ApiResponse<object>("Invalid category ID"));
             }
@@ -95,7 +95,7 @@ namespace AuctionBackend.Controllers
 
         // DELETE: api/category/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<IActionResult> DeleteCategory(string id)
         {
             var category = await _context.Categories.FindAsync(id);
 
@@ -110,9 +110,9 @@ namespace AuctionBackend.Controllers
             return NoContent();
         }
 
-        private bool CategoryExists(Guid id)
+        private bool CategoryExists(string id)
         {
-            return _context.Categories.Any(c => c.CategoryId == id);
+            return _context.Categories.Any(c => c.CategoryId.ToString() == id);
         }
     }
 }

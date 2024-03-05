@@ -89,7 +89,7 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(ApplicationUser model)
+        public async Task<IActionResult> Login(AuthModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password,
            isPersistent: false, lockoutOnFailure: false);
