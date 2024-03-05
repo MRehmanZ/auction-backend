@@ -29,30 +29,59 @@ namespace AuctionBackend.Seeds
                     }
                 }
 
-                // Admin User creation
-
-
-                string email = "mhamza3256@gmail.com";
-
-                string password = "@Hello1234";
-
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-                if (await userManager.FindByEmailAsync(email) == null)
+                await CreateUser(userManager, "Admin", "mrz707@outlook.com", "@Hello1234");
+                await CreateUser(userManager, "User", "emailtestreceive@gmail.com", "@ABcd1234");
+                await CreateCategory(context, "Electronics");
+                await CreateCategory(context, "Antiques");
+                await CreateCategory(context, "Cars");
+                await CreateCategory(context, "Paintings");
+                var user = await userManager.FindByEmailAsync("mrz707@outlook.com");
+                if (user != null)
                 {
-                    var user = new ApplicationUser();
-                    user.Email = email;
-                    user.UserName = email;
-
-                    await userManager.CreateAsync(user, password);
-
-                    await userManager.AddToRoleAsync(user, "Admin");
-
-                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    await userManager.ConfirmEmailAsync(user, token);
+                    await CreateAuctionItem(context, user);
                 }
             }
+        }
+
+        private static async Task CreateUser(UserManager<ApplicationUser> userManager, string role, string sampleEmail, string samplePassword)
+        {
+
+            if (await userManager.FindByEmailAsync(sampleEmail) == null)
+            {
+                var user = new ApplicationUser();
+                user.Email = sampleEmail;
+                user.UserName = sampleEmail;
+
+                await userManager.CreateAsync(user, samplePassword);
+
+                await userManager.AddToRoleAsync(user, role);
+
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                await userManager.ConfirmEmailAsync(user, token);
+            }
+        }
+
+        private static async Task CreateCategory(AuctionContext context, string sampleName)
+        {
+            var category = new Category();
+            category.Name = sampleName;
+            category.Auctions = new List<Auction>();
+            await context.SaveChangesAsync();
+        }
+
+        private static async Task CreateAuctionItem(AuctionContext context, ApplicationUser user)
+        {
+            var auctionItem = new Auction();
+            auctionItem.Name = "Television";
+            auctionItem.Condition = Auction.ItemCondition.REFURBISHED;
+            auctionItem.Description = "Recently refurbished, but new condition";
+            auctionItem.UserId = user.Id;
+            auctionItem.IsActive = true;
+            auctionItem.Price = 590;
+            await context.SaveChangesAsync();
         }
     }
 }
