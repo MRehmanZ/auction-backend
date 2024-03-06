@@ -1,22 +1,22 @@
 # Auction Backend RESTful Service in C#
 
 # Overview 
-> In this context, we examine the necessary steps involved in implementing a "Code-First Approach."
-> It's important to highlight that this compilation was essembled using visual studio.
-> This project constitutes an Auction backend service using ASP.NET Core, offering a robust foundation for builiding and overseeing several auction functionalities. It encompasses features such as Bid, Category, comment, and AuctionRecord, among others.
+* In this context, we examine the necessary steps involved in implementing a "Code-First Approach."
+* It's important to highlight that this compilation was essembled using Visual Studio.
+* This project constitutes an Auction backend service using ASP.NET Core, offering a robust foundation for building and overseeing several auction functionalities. It encompasses features such as Bid, Category, comment, and AuctionRecord, among others.
 
 # Technology Utilised
-> SQL server: relational database management system, offering realibility, scalability, and retrieval within the ASP.NET framework.
-> C# programming language: serves as the primary language for development purposes.
-> ASP.NET Core: A versatile framework designed for creating web appliations and services, leveraging the  C# programming language.
-> Entity Framework Core: An Object-Relational Mappinng (ORM) framework for .NET facilitates database  access within application..
-> ASP.NET Core Identity: offes functionalities for applicationuser authentication and authorisation. capabilities.
-> JWT Authentication: employed to secure API, utilising JSON Web Token.
+* SQL server: relational database management system, offering reliability, scalability, and retrieval within the ASP.NET framework.
+* C# programming language: serves as the primary language for development purposes.
+* ASP.NET Core: A versatile framework designed for creating web applications and services, leveraging the  C# programming language.
+* Entity Framework Core: An Object-Relational Mapping (ORM) framework for .NET facilitates database  access within the application.
+* ASP.NET Core Identity: offers functionalities for applicationuser authentication and authorisation. capabilities.
+* JWT Authentication: employed to secure API, utilising JSON Web Token.
 
 
 ## Sequence
 1. Initiating a new project
-2. Generate Model classes and integrating DBContext model class
+2. Generate Model classes and integrate DBContext model class
 3. Incorporating the context with dependency injection
 4. Implementing the Database Connection string
 5. Installing the package manager
