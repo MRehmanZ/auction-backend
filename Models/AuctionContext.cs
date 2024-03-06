@@ -26,12 +26,6 @@ namespace AuctionBackend.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuring a one-to-many relationship between ApplicationUser and Auction
-            modelBuilder.Entity<ApplicationUser>()
-                .HasMany(u => u.Auctions)
-                .WithOne(a => a.User)
-                .HasForeignKey(a => a.UserId);
-
             // Configuring a one-to-many relationship between ApplicationUser and Bid
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(u => u.Bids)
@@ -44,11 +38,6 @@ namespace AuctionBackend.Models
                 .WithOne(b => b.Auction)
                 .HasForeignKey(b => b.AuctionId);
 
-            // Configuring a one-to-many relationship between Category and Auction
-            modelBuilder.Entity<Category>()
-                .HasMany(a => a.Auctions)
-                .WithOne(c => c.Category)
-                .HasForeignKey(c => c.CategoryId);
 
            modelBuilder.Entity<Comment>()
                 .HasOne(a => a.Auction)

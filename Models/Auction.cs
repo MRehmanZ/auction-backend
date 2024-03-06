@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using AuctionBackend.Models;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuctionBackend.Models
 {
@@ -10,6 +11,8 @@ namespace AuctionBackend.Models
         public Auction()
         {
             Bids = new HashSet<Bid>();
+            Comments = new List<Comment>();
+            AuctionRecords = new List<AuctionRecord>();
         }
         public enum ItemCondition
         {
@@ -32,12 +35,12 @@ namespace AuctionBackend.Models
         [Required]
         public string Description { get; set; }
 
+        [ForeignKey("UserId")]
         public Guid UserId { get; set; }
-        public ApplicationUser User { get; set; }
 
         // Foreign key relationship with Category
+        [ForeignKey("CategoryId")]
         public Guid CategoryId { get; set; }
-        public Category Category { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
@@ -48,11 +51,11 @@ namespace AuctionBackend.Models
         
         public int NumberOfBids { get; set; } = 0;
         
-        public bool IsActive { get; set; } = false;
+        public bool IsActive { get; set; } = true;
 
         public Guid? WinnerBidId { get; set; }
 
-        public decimal CurrentHighestBid { get; set; }
+        public decimal? CurrentHighestBid { get; set; }
 
 
         // Collection navigation property for Bids placed by the user

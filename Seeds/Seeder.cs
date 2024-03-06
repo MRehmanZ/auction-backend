@@ -81,6 +81,8 @@ namespace AuctionBackend.Seeds
             auctionItem.UserId = user.Id;
             auctionItem.IsActive = true;
             auctionItem.Price = 590;
+
+            var category = context.Categories.FirstOrDefault(c => c.Name == "Electronics");
             await context.SaveChangesAsync();
         }
     }

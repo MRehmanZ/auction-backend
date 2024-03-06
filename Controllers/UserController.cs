@@ -161,6 +161,8 @@ namespace AuctionBackend.Controllers
         }
     }
 
+
+    // Generating response in JSON format
     public class ApiResponse<T>
     {
         public T Data { get; set; }

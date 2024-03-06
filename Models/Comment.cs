@@ -6,7 +6,6 @@ namespace AuctionBackend.Models
     {
         public Guid CommentId { get; set; }
 
-        //[MaxLength(ContentMaxLength)]
         [Required]
         public string Description { get; set; }
 

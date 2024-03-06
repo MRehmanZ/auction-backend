@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class CommentController : ControllerBase
@@ -55,7 +55,7 @@ namespace AuctionBackend.Controllers
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { id = comment.CommentId }, new ApiResponse<Comment>(comment));
+            return CreatedAtAction("GetComment", new { id = comment.CommentId.ToString() }, new ApiResponse<Comment>(comment));
         }
 
         // PUT: api/comment/{id}

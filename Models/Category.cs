@@ -8,6 +8,8 @@ namespace AuctionBackend.Models
         {
             this.Auctions = new HashSet<Auction>();
         }
+       
+
         public Guid CategoryId { get; set; }
 
         [Required]

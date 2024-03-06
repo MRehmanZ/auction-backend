@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AuctionBackend.Models;
+using System.Security.Claims;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize]
+   
     [ApiController]
     [Route("api/[controller]")]
     public class AuctionController : ControllerBase
@@ -56,10 +57,45 @@ namespace AuctionBackend.Controllers
             auction.CurrentHighestBid = 0;
             auction.WinnerBidId = null;
 
-            _context.Auctions.Add(auction);
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                return BadRequest("Invalid or missing user ID in claims.");
+            }
+
+            var user = _context.Users.FirstOrDefault(c => c.Id.ToString() == userId.ToString());
+
+
+            // Check if the category exists
+            var category = _context.Categories.FirstOrDefault(c => c.CategoryId == auction.CategoryId);
+
+            if (category == null)
+            {
+                return BadRequest("Category not found.");
+            }
+
+            // Create a new auction
+            var newAuction = new Auction
+            {
+                Name = auction.Name,
+                Description = auction.Description,
+                CategoryId = auction.CategoryId,
+                UserId = userId,
+                Condition = auction.Condition,
+                ExpiryDate = auction.ExpiryDate,
+                Price = auction.Price,
+                IsActive = auction.IsActive,
+
+                Bids = new List<Bid>(),
+                Comments = new List<Comment>(),
+                AuctionRecords = new List<AuctionRecord>()
+            };
+
+            _context.Auctions.Add(newAuction);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAuction", new { id = auction.AuctionId }, new ApiResponse<Auction>(auction));
+            return CreatedAtAction("GetAuction", new { id = newAuction.AuctionId }, new ApiResponse<Auction>(newAuction));
         }
 
         // PUT: api/auction/{id}

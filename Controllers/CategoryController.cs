@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize]
+   
     [ApiController]
     [Route("api/[controller]")]
     public class CategoryController : ControllerBase
@@ -55,7 +55,7 @@ namespace AuctionBackend.Controllers
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategory", new { id = category.CategoryId }, new ApiResponse<Category>(category));
+            return CreatedAtAction("GetCategory", new { id = category.CategoryId.ToString() }, new ApiResponse<Category>(category));
         }
 
         // PUT: api/category/{id}

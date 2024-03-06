@@ -11,7 +11,6 @@
         public DateTime RecordTime { get; set; }
         public string Action { get; set; } // Example: "BidPlaced", "BidUpdated", "BidRemoved"
 
-
         public Guid CurrentBid { get; set; }
 
         public int CurrentHighestBid { get; set; }

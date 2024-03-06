@@ -56,7 +56,8 @@ namespace AuctionBackend.Controllers
             _context.AuctionRecords.Add(auctionRecord);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAuctionRecord", new { id = auctionRecord.AuctionRecordId }, new ApiResponse<AuctionRecord>(auctionRecord));
+            return CreatedAtAction("GetAuctionRecord", new { id = auctionRecord.AuctionRecordId.ToString() }, 
+                new ApiResponse<AuctionRecord>(auctionRecord));
         }
 
         // PUT: api/auctionrecord/{id}

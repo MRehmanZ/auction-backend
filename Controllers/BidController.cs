@@ -9,7 +9,7 @@ using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
-    [Authorize]
+   
     [ApiController]
     [Route("api/[controller]")]
     public class BidController : ControllerBase
@@ -75,7 +75,7 @@ namespace AuctionBackend.Controllers
             _context.Bids.Add(bid);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBid", new { id = bid.BidId }, new ApiResponse<Bid>(bid));
+            return CreatedAtAction("GetBid", new { id = bid.BidId.ToString() }, new ApiResponse<Bid>(bid));
         }
 
         // PUT: api/bid/{id}

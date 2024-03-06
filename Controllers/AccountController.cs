@@ -73,9 +73,9 @@ namespace AuctionBackend.Controllers
         }
         // Add an action to handle email verification
         [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail(Guid userId, string token)
+        public async Task<IActionResult> VerifyEmail(string userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -91,8 +91,9 @@ namespace AuctionBackend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(AuthModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password,
-           isPersistent: false, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, 
+                isPersistent: false, lockoutOnFailure: false);
+
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
@@ -140,6 +141,5 @@ namespace AuctionBackend.Controllers
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }
