@@ -19,12 +19,12 @@ namespace AuctionBackend.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, 
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
             EmailService emailService, IConfiguration configuration)
         {
             _userManager = userManager;
@@ -34,10 +34,22 @@ namespace AuctionBackend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(User model)
+        public async Task<IActionResult> Register([FromBody] AuthModel model)
         {
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
+
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+
+            user.Password = model.Password;
+            user.Auctions = new List<Auction>();
+            user.Comments = new List<Comment>();
+            user.AuctionRecords = new List<AuctionRecord>();
+            user.Bids = new List<Bid>();
+
+            var result = await _userManager.CreateAsync(user, user.Password);
             if (result.Succeeded)
             {
                 // Generate an email verification token
@@ -75,16 +87,59 @@ namespace AuctionBackend.Controllers
             }
             return BadRequest("Email verification failed.");
         }
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login(User model)
+        public async Task<IActionResult> Login(AuthModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password,
-           isPersistent: false, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, 
+                isPersistent: false, lockoutOnFailure: false);
+
             if (result.Succeeded)
             {
-                return Ok("Login successful.");
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var token = GenerateJwtToken(user, roles);
+                    return Ok(new { Token = token });
+                }
             }
             return Unauthorized("Invalid login attempt.");
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok("Logged out");
+        }
+
+        private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            // Add roles as claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddHours(Convert.ToDouble(_configuration["Jwt:ExpireHours"]));
+
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Issuer"],
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

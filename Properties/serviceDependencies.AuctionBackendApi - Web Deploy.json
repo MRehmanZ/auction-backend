@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/auctionbackenddbserver/databases/AuctionBackend_db",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:Connection",
+      "dynamicId": null
+    },
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/AuctionBackendapi/apis/AuctionBackend",
+      "type": "apis.azure"
+    }
+  }
+}

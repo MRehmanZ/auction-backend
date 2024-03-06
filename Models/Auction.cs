@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using AuctionBackend.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuctionBackend.Models
 {
@@ -9,6 +11,8 @@ namespace AuctionBackend.Models
         public Auction()
         {
             Bids = new HashSet<Bid>();
+            Comments = new List<Comment>();
+            AuctionRecords = new List<AuctionRecord>();
         }
         public enum ItemCondition
         {
@@ -20,7 +24,8 @@ namespace AuctionBackend.Models
             POOR
         }
 
-        public Guid Id { get; set; }
+        [Key]
+        public Guid AuctionId { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -30,8 +35,12 @@ namespace AuctionBackend.Models
         [Required]
         public string Description { get; set; }
 
-        //public Guid UserId { get; set; }
-        public virtual User User { get; set; }
+        [ForeignKey("UserId")]
+        public Guid UserId { get; set; }
+
+        // Foreign key relationship with Category
+        [ForeignKey("CategoryId")]
+        public Guid CategoryId { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
@@ -42,11 +51,19 @@ namespace AuctionBackend.Models
         
         public int NumberOfBids { get; set; } = 0;
         
-        public bool IsActive { get; set; } = false;
-        
-        public int? WinnerBid { get; set; } // BidId
+        public bool IsActive { get; set; } = true;
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Bid> Bids { get; set; }
+        public Guid? WinnerBidId { get; set; }
+
+        public decimal? CurrentHighestBid { get; set; }
+
+
+        // Collection navigation property for Bids placed by the user
+        public ICollection<Bid> Bids { get; set; }
+
+        public ICollection<Comment> Comments { get; set; }
+
+         public ICollection<AuctionRecord> AuctionRecords { get; set; }
+
     }
 }

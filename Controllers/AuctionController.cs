@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AuctionBackend.Models;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace AuctionBackend.Controllers
 {
-    [Route("api/[controller]")]
+   
     [ApiController]
+    [Route("api/[controller]")]
     public class AuctionController : ControllerBase
     {
         private readonly AuctionContext _context;
@@ -16,70 +22,169 @@ namespace AuctionBackend.Controllers
             _context = context;
         }
 
-        // GET: api/Auction
+        // GET: api/auction
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Auction>>> GetAuctions()
+        public IActionResult GetAuctions()
         {
-            return await _context.Auctions.ToListAsync();
+            var auctions = _context.Auctions.ToList();
+            return Ok(new ApiResponse<IEnumerable<Auction>>(auctions));
         }
 
-        // GET: api/Auction/5
-        [HttpGet("{userId}/{auctionId}")]
-        public async Task<ActionResult<Auction>> GetAuction(int auctionId)
+        // GET: api/auction/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAuction(string id)
         {
-            
-                var auction = await _context.Auctions.FindAsync(auctionId);
+            var auction = await _context.Auctions.FindAsync(id);
 
-                if (auction != null)
-                {
-                    return auction;
-                }
-          
-            return NotFound();
+            if (auction == null)
+            {
+                return NotFound(new ApiResponse<object>("Auction not found"));
+            }
+
+            return Ok(new ApiResponse<Auction>(auction));
         }
 
-        // POST: api/Auction
+        // POST: api/auction
         [HttpPost]
-        public async Task<IActionResult> CreateAuction([FromBody] Auction auctionCreateModel)
+        public async Task<IActionResult> CreateAuction([FromBody] Auction auction)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ApiResponse<object>("Invalid model state"));
             }
 
-            // Get the current user ID from the authenticated user
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Initialize properties
+            auction.CurrentHighestBid = 0;
+            auction.WinnerBidId = null;
 
-            var auction = new Auction
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
             {
-                Title = auctionCreateModel.Title,
-                Description = auctionCreateModel.Description,
-                StartingPrice = auctionCreateModel.Price,
-                EndTime = auctionCreateModel.ExpiryDate,
-                UserId = userId, // Assign the auction to the current user
-                CategoryId = auctionCreateModel.CategoryId // Assuming CategoryId is provided in the request
+                return BadRequest("Invalid or missing user ID in claims.");
+            }
+
+            var user = _context.Users.FirstOrDefault(c => c.Id.ToString() == userId.ToString());
+
+
+            // Check if the category exists
+            var category = _context.Categories.FirstOrDefault(c => c.CategoryId == auction.CategoryId);
+
+            if (category == null)
+            {
+                return BadRequest("Category not found.");
+            }
+
+            // Create a new auction
+            var newAuction = new Auction
+            {
+                Name = auction.Name,
+                Description = auction.Description,
+                CategoryId = auction.CategoryId,
+                UserId = userId,
+                Condition = auction.Condition,
+                ExpiryDate = auction.ExpiryDate,
+                Price = auction.Price,
+                IsActive = auction.IsActive,
+
+                Bids = new List<Bid>(),
+                Comments = new List<Comment>(),
+                AuctionRecords = new List<AuctionRecord>()
             };
 
-            _context.Auctions.Add(auction);
+            _context.Auctions.Add(newAuction);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAuction", new { id = auction.AuctionId }, auction);
+            return CreatedAtAction("GetAuction", new { id = newAuction.AuctionId }, new ApiResponse<Auction>(newAuction));
         }
 
-        // DELETE: api/Auction/5
-        [HttpDelete("{userId}/{user}")]
-        public async Task<IActionResult> DeleteAuction(Guid id)
+        // PUT: api/auction/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAuction(string id, [FromBody] Auction updatedAuction)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid model state");
+            }
+
+            if (id != updatedAuction.AuctionId.ToString())
+            {
+                return BadRequest(new ApiResponse<object>("Invalid auction ID"));
+            }
+
+            _context.Entry(updatedAuction).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AuctionExists(id))
+                {
+                    return NotFound(new ApiResponse<object>("Auction not found"));
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/auction/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAuction(string id)
         {
             var auction = await _context.Auctions.FindAsync(id);
+
             if (auction == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponse<object>("Auction not found"));
             }
 
             _context.Auctions.Remove(auction);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST: api/auction/{id}/place-bid
+        [HttpPost("{id}/place-bid")]
+        public async Task<IActionResult> PlaceBid(string id, [FromBody] Bid bid)
+        {
+            var auction = await _context.Auctions.FindAsync(id);
+
+            if (auction == null)
+            {
+                return NotFound(new ApiResponse<object>("Auction not found"));
+            }
+
+            // Check if the bid Price is higher than the current highest bid
+            if (bid.Price <= auction.CurrentHighestBid)
+            {
+                return BadRequest(new ApiResponse<object>("Bid Price must be higher than the current highest bid"));
+            }
+
+            // Update the current highest bid
+            auction.CurrentHighestBid = bid.Price;
+
+            // Assign the bid as the winner bid
+            auction.WinnerBidId = bid.BidId;
+
+            // Update the auction
+            _context.Entry(auction).State = EntityState.Modified;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<object>("Bid placed successfully"));
+        }
+
+        private bool AuctionExists(string id)
+        {
+            return _context.Auctions.Any(a => a.AuctionId.ToString() == id);
         }
     }
 }

@@ -1,31 +1,40 @@
 using AuctionBackend.Models;
 using AuctionBackend.Services;
-using Microsoft.EntityFrameworkCore;
+using AuctionBackend.Controllers;
+using AuctionBackend.Seeds;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AuctionBackend
 
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllers();
             builder.Services.AddDbContext<AuctionContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("Connection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<AuctionContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+                {
+                    options.User.RequireUniqueEmail = false; // for testing purposes
+                })
+                .AddEntityFrameworkStores<AuctionContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddScoped<EmailService>();
+            builder.Services.AddScoped<RolesController>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -54,11 +63,9 @@ namespace AuctionBackend
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            
 
             app.MapControllers();
 
@@ -67,6 +74,23 @@ namespace AuctionBackend
             app.UseAuthorization();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<AuctionContext>();
+
+                try
+                {
+                    context.Database.Migrate();
+                    await Seeder.InitializeAsync(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred seeding the Database.");
+                }
+            }
 
             app.Run();
         }

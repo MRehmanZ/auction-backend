@@ -8,7 +8,9 @@ namespace AuctionBackend.Models
         {
             this.Auctions = new HashSet<Auction>();
         }
-        public Guid Id { get; set; }
+       
+
+        public Guid CategoryId { get; set; }
 
         [Required]
         public string Name { get; set; }

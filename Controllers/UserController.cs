@@ -1,101 +1,188 @@
-﻿using AuctionBackend.Models;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AuctionBackend.Models;
 
 namespace AuctionBackend.Controllers
 {
+   // [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuctionContext _context;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(AuctionContext context)
+        public UserController(UserManager<ApplicationUser> userManager, AuctionContext context, ILogger<UserController> logger)
         {
+            _userManager = userManager;
             _context = context;
+            _logger = logger;
         }
 
-        // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = _context.Users.ToList();
+            _logger.LogInformation("Getting list of all users");
+
+            return Ok(new ApiResponse<IEnumerable<ApplicationUser>>(users));
         }
 
-        // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<IActionResult> GetUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
+            _logger.LogInformation("Getting user with User ID: {UserId}", id);
 
             if (user == null)
             {
-                return NotFound();
+                _logger.LogInformation("User: {UserId} not found", id);
+                return NotFound(new ApiResponse<ApplicationUser>("User not found"));
             }
 
-            return user;
+            return Ok(new ApiResponse<ApplicationUser>(user));
         }
 
-        // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<IActionResult> CreateUser([FromBody] ApplicationUser user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            user.UserName = user.Email;
+
+            var result = await _userManager.CreateAsync(user);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User created with ID: {UserID}", user.Id);
+                return CreatedAtAction("GetUser", new { id = user.Id }, new ApiResponse<ApplicationUser>(user));
+            }
+
+            _logger.LogError("Error creating user");
+            return BadRequest(result.Errors);
         }
 
-        // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser updatedUser)
         {
-            if (id != user.Id)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                _logger.LogError("Error invalid model state");
+                return BadRequest("Invalid model state");
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            if (!id.Equals(updatedUser.Id.ToString()))
+            {
+                _logger.LogError("Error updating user: {UserId}", id);
 
-            try
-            {
-                await _context.SaveChangesAsync();
+                return BadRequest(new ApiResponse<object>("Invalid user ID"));
             }
-            catch (DbUpdateConcurrencyException)
+
+            var currentUser = await _userManager.FindByIdAsync(id);
+
+            if (currentUser != null) 
             {
-                if (!UserExists(id))
+                currentUser.Email = updatedUser.Email;
+                currentUser.Password = updatedUser.Password;
+                currentUser.Balance = updatedUser.Balance;
+
+                var result = await _userManager.UpdateAsync(currentUser);
+
+                try
                 {
-                    return NotFound();
+                    if (result.Succeeded)
+                    {
+                        Ok(updatedUser);
+                    }
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!UserExists(id))
+                    {
+                        _logger.LogWarning("User not found");
+                        return NotFound(new ApiResponse<object>("User not found"));
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+            } else
+            {
+                NotFound("User not found");
             }
 
             return NoContent();
         }
 
-        // DELETE: api/User/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
+
             if (user == null)
             {
-                return NotFound();
+                _logger.LogWarning("User not found");
+
+                return NotFound(new ApiResponse<object>("User not found"));
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.DeleteAsync(user);
 
-            return NoContent();
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User deleted with ID: {UserID}", user.Id.ToString());
+
+                return NoContent();
+            }
+
+            return BadRequest(result.Errors);
         }
 
-        private bool UserExists(Guid id)
+        private bool UserExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            bool IsFound = _userManager.Users.Any(u => u.Id.ToString() == id);
+            
+            if (IsFound)
+            {
+                _logger.LogInformation("User found with ID: {UserID}", id);
+
+            } 
+            return IsFound;
+        }
+    }
+
+
+    // Generating response in JSON format
+    public class ApiResponse<T>
+    {
+        public T Data { get; set; }
+        public string Message { get; set; }
+        public IEnumerable<string> Errors { get; set; }
+
+        public ApiResponse(T data)
+        {
+            Data = data;
+        }
+
+        public ApiResponse(string message)
+        {
+            Message = message;
+        }
+
+        public ApiResponse(string message, IEnumerable<string> errors)
+        {
+            Message = message;
+            Errors = errors;
         }
     }
 }
